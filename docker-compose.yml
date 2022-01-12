@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: docker/server/Dockerfile
+    container_name: votingsystem-server
+    command: go run main.go
+    volumes:
+      - ./server:/go/src/github.com/xAyumux/TDUVotingSystem
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: votingsystem-mysql
+    volumes:
+      - ./docker/db/initdb.d:/docker-entrypoint-initdb.d
+      - ./db:/var/lib/mysql
+    env_file:
+      - ./docker/db/.env
+    environment:
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASS}
+      - MYSQL_ROOT_PASSWORD=${DB_PASS}
+      - TZ=${TZ}
+    ports:
+      - ${DB_PORT}:3306

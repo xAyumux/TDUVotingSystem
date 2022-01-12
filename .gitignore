@@ -1,0 +1,6 @@
+.vscode/.history/
+.DS_Store
+docker/db/.env
+.env
+server/db.env
+/db/

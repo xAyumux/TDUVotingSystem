@@ -1,0 +1,3 @@
+USE TDUVotingSystem;
+CREATE TABLE IF NOT EXISTS polls (id INT PRIMARY KEY, title TEXT, description TEXT);
+CREATE TABLE IF NOT EXISTS votes(userid TEXT PRIMARY KEY, id INT, result INT);
