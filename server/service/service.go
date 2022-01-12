@@ -6,7 +6,7 @@ import (
 )
 
 func GetPollService() []model.Polls {
-	results := database.Select()
+	results := database.SelectPolls()
 	return results
 }
 
@@ -15,10 +15,17 @@ func GetQueryService(id int64) []model.Polls {
 	return results
 }
 
-func GetListService() {
+func GetListService() []model.Votes {
+	results := database.SelectVotes()
+	return results
 }
 
-func PostVoteService(userid string, id, result int64) int64 {
-	lastInsertID := database.Insert(userid, id, result)
+func PostPollsService(id int64, title, description string) int64 {
+	lastInsertID := database.InsertPolls(id, title, description)
+	return lastInsertID
+}
+
+func PostVotesService(userid string, id, result int64) int64 {
+	lastInsertID := database.InsertVotes(userid, id, result)
 	return lastInsertID
 }

@@ -13,7 +13,8 @@ func main() {
 	router.GET("/get/poll", controller.GetPoll)
 	router.GET("/poll", controller.GetQuery)
 	router.GET("/list", controller.GetList)
-	router.POST("/vote", controller.PostVote)
+	router.POST("/post/polls", controller.PostPolls)
+	router.POST("/post/votes", controller.PostVotes)
 
 	router.Run(":8000")
 }

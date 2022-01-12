@@ -25,7 +25,7 @@ func Connect() *sql.DB {
 	return db
 }
 
-func Select() []model.Polls {
+func SelectPolls() []model.Polls {
 	results := []model.Polls{}
 
 	db := Connect()
@@ -45,6 +45,35 @@ func Select() []model.Polls {
 			log.Fatal(err)
 		}
 		results = append(results, polls)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return results
+}
+
+func SelectVotes() []model.Votes {
+	results := []model.Votes{}
+
+	db := Connect()
+	defer db.Close()
+
+	rows, err := db.Query("SELECT userid, id, result FROM votes")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	votes := model.Votes{}
+
+	for rows.Next() {
+		err := rows.Scan(&votes.UserID, &votes.Id, &votes.Result)
+		if err != nil {
+			log.Fatal(err)
+		}
+		results = append(results, votes)
 	}
 	err = rows.Err()
 	if err != nil {
@@ -83,7 +112,28 @@ func SelectQuery(id int64) []model.Polls {
 	return results
 }
 
-func Insert(userid string, id, result int64) int64 {
+func InsertPolls(id int64, title, description string) int64 {
+	db := Connect()
+	defer db.Close()
+
+	stmtInsert, err := db.Prepare("INSERT INTO polls(id, title, description) VALUES (?, ?, ?)")
+	if err != nil {
+		panic(err.Error())
+	}
+	defer stmtInsert.Close()
+
+	insertResult, err := stmtInsert.Exec(id, title, description)
+	if err != nil {
+		log.Fatal(err)
+	}
+	lastInsertID, err := insertResult.LastInsertId()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return lastInsertID
+}
+
+func InsertVotes(userid string, id, result int64) int64 {
 	db := Connect()
 	defer db.Close()
 
