@@ -13,7 +13,7 @@ func main() {
 	// 指定されたidを表示
 	router.GET("/poll", controller.GetQuery)
 	// title一覧を表示
-	router.GET("/list", controller.GetList)
+	router.GET("/pollslist", controller.GetPollsList)
 	// pollsテーブルに新しいデータを追加
 	router.POST("/post/polls", controller.PostPolls)
 	// votesテーブルに新しいデータを追加

@@ -25,12 +25,13 @@ func Connect() *sql.DB {
 	return db
 }
 
-func SelectPolls() []model.Polls {
+func SelectPoll() ([]model.Polls, int64) {
 	results := []model.Polls{}
 
 	db := Connect()
 	defer db.Close()
 
+	// idが一番大きいデータを取得
 	rows, err := db.Query("SELECT id, title, description FROM polls")
 	if err != nil {
 		log.Fatal(err)
@@ -51,44 +52,33 @@ func SelectPolls() []model.Polls {
 		log.Fatal(err)
 	}
 
-	return results
-}
-
-func SelectVotes() []model.Votes {
-	results := []model.Votes{}
-
-	db := Connect()
-	defer db.Close()
-
-	rows, err := db.Query("SELECT userid, id, result FROM votes")
+	// idを使いvotesテーブルからresultが同じものの件数を取得
+	rowsVotes, err := db.Query("SELECT id, result, COUNT(result) FROM votes GROUP BY result WHERE id = ?", polls.Id)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer rows.Close()
+	defer rowsVotes.Close()
 
 	votes := model.Votes{}
+	var number int64 = 0
 
 	for rows.Next() {
-		err := rows.Scan(&votes.UserID, &votes.Id, &votes.Result)
+		err := rowsVotes.Scan(&votes.Id, &votes.Result, number)
 		if err != nil {
 			log.Fatal(err)
 		}
-		results = append(results, votes)
-	}
-	err = rows.Err()
-	if err != nil {
-		log.Fatal(err)
 	}
 
-	return results
+	return results, number
 }
 
-func SelectQuery(id int64) []model.Polls {
+func SelectQuery(id int64) ([]model.Polls, int64) {
 	results := []model.Polls{}
 
 	db := Connect()
 	defer db.Close()
 
+	// 指定されたidからデータを取得
 	rows, err := db.Query("SELECT id, title, description FROM polls WHERE id = ?", id)
 	if err != nil {
 		log.Fatal(err)
@@ -109,6 +99,52 @@ func SelectQuery(id int64) []model.Polls {
 		log.Fatal(err)
 	}
 
+	// idを使いvotesテーブルからresultが同じものの件数を取得
+	rowsVotes, err := db.Query("SELECT id, result, COUNT(result) FROM votes GROUP BY result WHERE id = ?", polls.Id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rowsVotes.Close()
+
+	votes := model.Votes{}
+	var number int64 = 0
+
+	for rows.Next() {
+		err := rowsVotes.Scan(&votes.Id, &votes.Result, number)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	return results, number
+}
+
+func SelectPollsList() []model.Polls {
+	results := []model.Polls{}
+
+	db := Connect()
+	defer db.Close()
+
+	rows, err := db.Query("SELECT id, title, description FROM polls")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	votes := model.Polls{}
+
+	for rows.Next() {
+		err := rows.Scan(&votes.Id, &votes.Title, &votes.Description)
+		if err != nil {
+			log.Fatal(err)
+		}
+		results = append(results, votes)
+	}
+	err = rows.Err()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return results
 }
 
@@ -116,13 +152,13 @@ func InsertPolls(id int64, title, description string) int64 {
 	db := Connect()
 	defer db.Close()
 
-	stmtInsert, err := db.Prepare("INSERT INTO polls(id, title, description) VALUES (?, ?, ?)")
+	stmtInsert, err := db.Prepare("INSERT INTO polls(title, description) VALUES (?, ?)")
 	if err != nil {
 		panic(err.Error())
 	}
 	defer stmtInsert.Close()
 
-	insertResult, err := stmtInsert.Exec(id, title, description)
+	insertResult, err := stmtInsert.Exec(title, description)
 	if err != nil {
 		log.Fatal(err)
 	}

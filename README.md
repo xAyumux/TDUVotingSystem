@@ -17,11 +17,11 @@ API - Vue.js
 
 ### Polls
 
-|             |      |                   |
-| ----------- | ---- | ----------------- |
-| id          | INT  | PK,AUTO_INCREMENT |
-| title       | TEXT |                   |
-| description | TEXT |                   |
+|             |      |                    |
+| ----------- | ---- | ------------------ |
+| id          | INT  | PK, AUTO_INCREMENT |
+| title       | TEXT |                    |
+| description | TEXT |                    |
 
 PK(id)
 
@@ -69,7 +69,7 @@ votes テーブル
 QueryString を取得
 polls テーブル
 
-- GET /list
+- GET /pollslist
 
 return JSON{
 Title

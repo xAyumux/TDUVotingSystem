@@ -9,11 +9,12 @@ import (
 )
 
 func GetPoll(c *gin.Context) {
-	results := service.GetPollService()
+	results, number := service.GetPollService()
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "GET Poll OK!",
 		"results": results,
+		"number":  number,
 	})
 }
 
@@ -21,17 +22,18 @@ func GetQuery(c *gin.Context) {
 	idString := c.Query("id")
 	var id int64
 	id, _ = strconv.ParseInt(idString, 10, 64)
-	results := service.GetQueryService(id)
+	results, number := service.GetQueryService(id)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message":     "GET QueryString Poll OK!",
 		"QueryString": id,
 		"results":     results,
+		"number":      number,
 	})
 }
 
-func GetList(c *gin.Context) {
-	results := service.GetListService()
+func GetPollsList(c *gin.Context) {
+	results := service.GetPollsListService()
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "GET List OK!",

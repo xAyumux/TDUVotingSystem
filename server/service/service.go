@@ -5,18 +5,18 @@ import (
 	"github.com/xAyumux/TDUVotingSystem/model"
 )
 
-func GetPollService() []model.Polls {
-	results := database.SelectPolls()
-	return results
+func GetPollService() ([]model.Polls, int64) {
+	results, number := database.SelectPoll()
+	return results, number
 }
 
-func GetQueryService(id int64) []model.Polls {
-	results := database.SelectQuery(id)
-	return results
+func GetQueryService(id int64) ([]model.Polls, int64) {
+	results, number := database.SelectQuery(id)
+	return results, number
 }
 
-func GetListService() []model.Votes {
-	results := database.SelectVotes()
+func GetPollsListService() []model.Polls {
+	results := database.SelectPollsList()
 	return results
 }
 
