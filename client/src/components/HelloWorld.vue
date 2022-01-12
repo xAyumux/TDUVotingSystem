@@ -1,58 +1,57 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
-  </div>
+  <v-container class="my-10">
+    <v-sheet class="d-flex justify-center">
+      <v-sheet width="100%" class="px-7">
+        <v-card
+          color="#a1f1ff"
+          class="pa-3 mb-4 rounded-lg"
+          v-for="item in datas"
+          :key="item.title"
+        >
+          <h3 class="my-3 text-center">{{ item.title }}</h3>
+          <GChart type="PieChart" :data="item.data" :options="chartOptions"
+        /></v-card>
+      </v-sheet>
+    </v-sheet>
+  </v-container>
 </template>
 
 <script>
+import { GChart } from "vue-google-charts";
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
-</script>
+  name: "HelloWorld",
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>
+  components: {
+    GChart,
+  },
+
+  data() {
+    return {
+      datas: [],
+      // Array will be automatically processed with visualization.arrayToDataTable function
+      chartData: {
+        title: "たけのこきのこ戦争",
+        data: [
+          ["Task", "Hours per Day"],
+          ["きのこ派", 11],
+          ["たけのこ派", 10],
+        ],
+      },
+      options: {},
+      chartOptions: {
+        is3D: true,
+        backgroundColor: "#a1f1ff",
+      },
+    };
+  },
+
+  mounted() {
+    // this.VueAxios.get("/api/user/me", {
+    //   withCredentials: true,
+    // });
+    for (let a = 0; a < 10; a++) {
+      this.datas.push(this.chartData);
+    }
+  },
+};
+</script>
