@@ -43,6 +43,7 @@ FK(id)
   今日の投票結果を取得
   title:array
   各選択肢と票数を格納
+  最新の ID の投票の関連ずけられた VOTE レコードがそれぞれ何項目づつあるのか
 
 - GET /poll?id=xxxx
 
