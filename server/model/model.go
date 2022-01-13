@@ -1,13 +1,13 @@
 package model
 
 type Polls struct {
-	Id          int64
+	Id          int
 	Title       string
 	Description string
 }
 
 type Votes struct {
 	UserID string
-	Id     int64
-	Result int64
+	Id     int
+	Result int
 }
