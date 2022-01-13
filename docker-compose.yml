@@ -6,11 +6,13 @@ services:
       context: .
       dockerfile: docker/client/Dockerfile
     container_name: votingsystem-client
-    command: yarn serve
     volumes:
       - ./client:/app
     ports:
       - "8080:8080"
+    stdin_open: true
+    tty: true
+
 
   server:
     build:
@@ -26,7 +28,6 @@ services:
       - db
 
   db:
-    platform: linux/x86_64
     image: mysql:8.0
     container_name: votingsystem-mysql
     volumes:
