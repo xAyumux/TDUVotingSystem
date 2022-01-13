@@ -10,4 +10,5 @@ type Votes struct {
 	UserID string
 	Id     int
 	Result int
+	Number int
 }

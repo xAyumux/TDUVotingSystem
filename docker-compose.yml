@@ -32,6 +32,7 @@ services:
     container_name: votingsystem-mysql
     volumes:
       - ./docker/db/initdb.d:/docker-entrypoint-initdb.d
+      - ./docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
       - ./db:/var/lib/mysql
     env_file:
       - ./docker/db/.env

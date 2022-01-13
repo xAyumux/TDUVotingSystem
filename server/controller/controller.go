@@ -8,7 +8,7 @@ import (
 )
 
 func GetPoll(c *gin.Context) {
-	results, number := service.GetPollService()
+	results, resultsVotes := service.GetPollService()
 
 	c.JSON(http.StatusOK, gin.H{
 		"message":           "GET Poll OK!",
@@ -16,13 +16,13 @@ func GetPoll(c *gin.Context) {
 		"resultId":          results.Id,
 		"resultTitle":       results.Title,
 		"resultDescription": results.Description,
-		"number":            number,
+		"resultsVotes":      resultsVotes,
 	})
 }
 
 func GetQuery(c *gin.Context) {
 	id := c.Query("id")
-	results, number := service.GetQueryService(id)
+	results, resultsVotes := service.GetQueryService(id)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message":           "GET QueryString Poll OK!",
@@ -31,7 +31,7 @@ func GetQuery(c *gin.Context) {
 		"resultId":          results.Id,
 		"resultTitle":       results.Title,
 		"resultDescription": results.Description,
-		"number":            number,
+		"resultsVotes":      resultsVotes,
 	})
 }
 
