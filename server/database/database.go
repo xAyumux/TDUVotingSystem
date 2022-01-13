@@ -25,14 +25,15 @@ func Connect() *sql.DB {
 	return db
 }
 
-func SelectPoll() ([]model.Polls, int64) {
-	results := []model.Polls{}
+func SelectPoll() (model.Polls, int) {
+	results := model.Polls{}
 
 	db := Connect()
 	defer db.Close()
 
 	// idが一番大きいデータを取得
-	rows, err := db.Query("SELECT id, title, description FROM polls")
+	// 並び替え後、最初の1行を取得
+	rows, err := db.Query("SELECT id, title, description FROM polls ORDER BY id DESC LIMIT 1")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -45,24 +46,25 @@ func SelectPoll() ([]model.Polls, int64) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		results = append(results, polls)
 	}
+	results = polls
+
 	err = rows.Err()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// idを使いvotesテーブルからresultが同じものの件数を取得
-	rowsVotes, err := db.Query("SELECT id, result, COUNT(result) FROM votes GROUP BY result WHERE id = ?", polls.Id)
+	rowsVotes, err := db.Query("SELECT id, result, COUNT(result) FROM votes WHERE id = ? GROUP BY result", polls.Id)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rowsVotes.Close()
 
 	votes := model.Votes{}
-	var number int64 = 0
+	var number int = 0
 
-	for rows.Next() {
+	for rowsVotes.Next() {
 		err := rowsVotes.Scan(&votes.Id, &votes.Result, number)
 		if err != nil {
 			log.Fatal(err)
@@ -72,44 +74,49 @@ func SelectPoll() ([]model.Polls, int64) {
 	return results, number
 }
 
-func SelectQuery(id int64) ([]model.Polls, int64) {
-	results := []model.Polls{}
+func SelectQuery(id string) (model.Polls, int) {
+	results := model.Polls{}
 
 	db := Connect()
 	defer db.Close()
 
 	// 指定されたidからデータを取得
-	rows, err := db.Query("SELECT id, title, description FROM polls WHERE id = ?", id)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer rows.Close()
+	// rows, err := db.Query("SELECT id, title, description FROM polls WHERE id = ?", id)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer rows.Close()
 
 	polls := model.Polls{}
 
-	for rows.Next() {
-		err := rows.Scan(&polls.Id, &polls.Title, &polls.Description)
-		if err != nil {
-			log.Fatal(err)
-		}
-		results = append(results, polls)
-	}
-	err = rows.Err()
+	// for rows.Next() {
+	// 	err := rows.Scan(&polls.Id, &polls.Title, &polls.Description)
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// }
+	err := db.QueryRow("SELECT id, title, description FROM polls WHERE id = ?", id).Scan(&polls.Id, &polls.Title, &polls.Description)
 	if err != nil {
 		log.Fatal(err)
 	}
+	results = polls
+
+	// err = rows.Err()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	// idを使いvotesテーブルからresultが同じものの件数を取得
-	rowsVotes, err := db.Query("SELECT id, result, COUNT(result) FROM votes GROUP BY result WHERE id = ?", polls.Id)
+	rowsVotes, err := db.Query("SELECT id, result, COUNT(result) FROM votes WHERE id = ? GROUP BY result", id)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rowsVotes.Close()
 
 	votes := model.Votes{}
-	var number int64 = 0
+	var number int = 0
 
-	for rows.Next() {
+	for rowsVotes.Next() {
 		err := rowsVotes.Scan(&votes.Id, &votes.Result, number)
 		if err != nil {
 			log.Fatal(err)
@@ -148,7 +155,7 @@ func SelectPollsList() []model.Polls {
 	return results
 }
 
-func InsertPolls(id int64, title, description string) int64 {
+func InsertPolls(title, description string) int64 {
 	db := Connect()
 	defer db.Close()
 
@@ -169,7 +176,7 @@ func InsertPolls(id int64, title, description string) int64 {
 	return lastInsertID
 }
 
-func InsertVotes(userid string, id, result int64) int64 {
+func InsertVotes(userid, id, result string) int64 {
 	db := Connect()
 	defer db.Close()
 

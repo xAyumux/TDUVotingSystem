@@ -2,7 +2,6 @@ package controller
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/xAyumux/TDUVotingSystem/service"
@@ -12,23 +11,27 @@ func GetPoll(c *gin.Context) {
 	results, number := service.GetPollService()
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "GET Poll OK!",
-		"results": results,
-		"number":  number,
+		"message":           "GET Poll OK!",
+		"results":           results,
+		"resultId":          results.Id,
+		"resultTitle":       results.Title,
+		"resultDescription": results.Description,
+		"number":            number,
 	})
 }
 
 func GetQuery(c *gin.Context) {
-	idString := c.Query("id")
-	var id int64
-	id, _ = strconv.ParseInt(idString, 10, 64)
+	id := c.Query("id")
 	results, number := service.GetQueryService(id)
 
 	c.JSON(http.StatusOK, gin.H{
-		"message":     "GET QueryString Poll OK!",
-		"QueryString": id,
-		"results":     results,
-		"number":      number,
+		"message":           "GET QueryString Poll OK!",
+		"QueryString":       id,
+		"results":           results,
+		"resultId":          results.Id,
+		"resultTitle":       results.Title,
+		"resultDescription": results.Description,
+		"number":            number,
 	})
 }
 
@@ -42,13 +45,11 @@ func GetPollsList(c *gin.Context) {
 }
 
 func PostPolls(c *gin.Context) {
-	idString := c.PostForm("id")
-	var id int64
-	id, _ = strconv.ParseInt(idString, 10, 64)
-	title := c.Query("title")
+	id := c.PostForm("id")
+	title := c.PostForm("title")
 	description := c.PostForm("description")
 
-	lastInsertID := service.PostPollsService(id, title, description)
+	lastInsertID := service.PostPollsService(title, description)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message":             "POST Polls OK!",
@@ -61,12 +62,8 @@ func PostPolls(c *gin.Context) {
 
 func PostVotes(c *gin.Context) {
 	userid := c.PostForm("userid")
-	idString := c.Query("id")
-	var id int64
-	id, _ = strconv.ParseInt(idString, 10, 64)
-	resultString := c.PostForm("result")
-	var result int64
-	result, _ = strconv.ParseInt(resultString, 10, 64)
+	id := c.PostForm("id")
+	result := c.PostForm("result")
 
 	lastInsertID := service.PostVotesService(userid, id, result)
 
